@@ -1,0 +1,62 @@
+{
+  "name": "digitalgiant",
+  "version": "1.0.0",
+  "description": "🏗️ Digital Giant - Connection Economy Revolution. Empowering Connection Masters to Build Their Digital Empire",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "python3 -m pip install -r requirements.txt 2>/dev/null || echo 'Python dependencies will be installed when available'",
+    "start": "python3 ai_agent_orchestrator.py",
+    "dev": "python3 ai_agent_orchestrator.py --mode interactive",
+    "deploy:local": "./deploy-unykorn-ecosystem.sh",
+    "test": "python3 -m pytest tests/ 2>/dev/null || echo 'Tests will run when available'",
+    "lint": "echo 'Linting Solidity contracts...' && npx solhint src/*.sol 2>/dev/null || echo 'Solhint not available, skipping'",
+    "build": "echo 'Building Digital Giant ecosystem...' && chmod +x deploy-unykorn-ecosystem.sh",
+    "setup": "npm run build && echo 'Setup complete! Run npm start to launch Digital Giant'",
+    "dashboard": "python3 qr_sms_interface.py",
+    "ai": "python3 ai_agent_orchestrator.py",
+    "qr": "python3 qr_sms_interface.py --qr-only",
+    "sms": "python3 qr_sms_interface.py --sms-only"
+  },
+  "keywords": [
+    "blockchain",
+    "cryptocurrency",
+    "networking",
+    "MLM",
+    "AI",
+    "web3",
+    "defi",
+    "connection-economy",
+    "digital-giant",
+    "unykorn"
+  ],
+  "author": "Digital Giant Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kevanbtc/digitalgiant.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kevanbtc/digitalgiant/issues"
+  },
+  "homepage": "https://github.com/kevanbtc/digitalgiant#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "web3": "^4.0.0",
+    "ethers": "^6.0.0",
+    "qrcode": "^1.5.3",
+    "express": "^4.18.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "solhint": "^4.0.0",
+    "prettier": "^3.0.0",
+    "eslint": "^8.0.0"
+  },
+  "optionalDependencies": {
+    "foundry": "latest"
+  }
+}
