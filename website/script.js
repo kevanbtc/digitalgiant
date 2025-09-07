@@ -1,19 +1,18 @@
-// Unykorn Website JavaScript
+// Digital Giant - Connection Economy Revolution JavaScript
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize all components
-    initializeNavbar();
+    initializeNavigation();
     initializeAnimations();
     initializeCounters();
-    initializeCalculators();
-    initializeInteractions();
     initializeScrollEffects();
-    initializeWalletConnection();
-    initializePackSelection();
-    initializeCommissionCalculator();
+    initializeInteractions();
+    
+    console.log('🏗️ Digital Giant - Connection Economy Revolution Initialized');
 });
 
-// Navbar functionality
-function initializeNavbar() {
+// Navigation functionality
+function initializeNavigation() {
     const navbar = document.querySelector('.navbar');
     const navLinks = document.querySelectorAll('.nav-link');
     
@@ -21,33 +20,98 @@ function initializeNavbar() {
     window.addEventListener('scroll', () => {
         if (window.scrollY > 100) {
             navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-            navbar.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+            navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
         } else {
             navbar.style.background = 'rgba(255, 255, 255, 0.95)';
             navbar.style.boxShadow = 'none';
         }
     });
     
-    // Smooth scrolling for navigation links
+    // Smooth scroll for navigation links
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             const targetId = link.getAttribute('href');
-            const targetElement = document.querySelector(targetId);
+            const targetSection = document.querySelector(targetId);
             
-            if (targetElement) {
-                targetElement.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
+            if (targetSection) {
+                const navHeight = navbar.offsetHeight;
+                const targetPosition = targetSection.offsetTop - navHeight;
+                
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
                 });
+                
+                // Update active nav link
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
             }
         });
     });
 }
 
-// Animation effects
+// Animation and visual effects
 function initializeAnimations() {
-    // Create intersection observer for fade-in animations
+    // Animated counters for hero stats
+    const statNumbers = document.querySelectorAll('.stat-number');
+    
+    statNumbers.forEach(stat => {
+        const target = parseInt(stat.getAttribute('data-target'));
+        animateCounter(stat, target);
+    });
+    
+    // Network node animations
+    const networkNodes = document.querySelectorAll('.network-node:not(.central)');
+    
+    networkNodes.forEach((node, index) => {
+        node.style.animationDelay = `${index * 0.5}s`;
+        node.addEventListener('mouseenter', () => {
+            node.style.transform = 'scale(1.2)';
+            node.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.5)';
+        });
+        
+        node.addEventListener('mouseleave', () => {
+            node.style.transform = 'scale(1)';
+            node.style.boxShadow = 'none';
+        });
+    });
+    
+    // Connection line animations
+    const connectionLines = document.querySelectorAll('.connection-line');
+    connectionLines.forEach((line, index) => {
+        line.style.animationDelay = `${index * 0.7}s`;
+    });
+}
+
+// Counter animation function
+function animateCounter(element, target) {
+    let current = 0;
+    const increment = target / 100;
+    const duration = 2000; // 2 seconds
+    const stepTime = duration / 100;
+    
+    const timer = setInterval(() => {
+        current += increment;
+        
+        if (current >= target) {
+            current = target;
+            clearInterval(timer);
+        }
+        
+        // Format large numbers
+        if (target >= 1000000) {
+            element.textContent = (current / 1000000).toFixed(1) + 'M';
+        } else if (target >= 1000) {
+            element.textContent = (current / 1000).toFixed(0) + 'K';
+        } else {
+            element.textContent = Math.floor(current);
+        }
+    }, stepTime);
+}
+
+// Scroll-based animations
+function initializeScrollEffects() {
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
@@ -56,521 +120,677 @@ function initializeAnimations() {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
+                entry.target.classList.add('revealed');
+                
+                // Trigger specific animations for different elements
+                if (entry.target.classList.contains('infra-card')) {
+                    animateInfraCard(entry.target);
+                }
+                
+                if (entry.target.classList.contains('vision-card')) {
+                    animateVisionCard(entry.target);
+                }
+                
+                if (entry.target.classList.contains('step-card')) {
+                    animateStepCard(entry.target);
+                }
             }
         });
     }, observerOptions);
     
-    // Observe elements for animations
-    const animatedElements = document.querySelectorAll('.layer-card, .tokenomics-card, .pack-card, .tier-card, .phase-card, .contract-card');
-    animatedElements.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
-        el.style.transition = 'all 0.6s ease-out';
+    // Observe elements for scroll animations
+    const scrollElements = document.querySelectorAll(`
+        .vision-card, 
+        .infra-card, 
+        .stream-card, 
+        .case-card, 
+        .step-card,
+        .phase,
+        .security-card,
+        .community-card
+    `);
+    
+    scrollElements.forEach(el => {
+        el.classList.add('scroll-reveal');
         observer.observe(el);
     });
 }
 
-// Counter animations
-function initializeCounters() {
-    const counters = document.querySelectorAll('.stat-number');
-    const observerOptions = {
-        threshold: 0.5
-    };
+// Card-specific animations
+function animateInfraCard(card) {
+    const delay = Array.from(card.parentNode.children).indexOf(card) * 100;
     
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                animateCounter(entry.target);
-                observer.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-    
-    counters.forEach(counter => {
-        observer.observe(counter);
-    });
-}
-
-function animateCounter(element) {
-    const target = parseInt(element.dataset.target);
-    const duration = 2000;
-    const increment = target / (duration / 16);
-    let current = 0;
-    
-    const timer = setInterval(() => {
-        current += increment;
-        if (current >= target) {
-            element.textContent = formatNumber(target);
-            clearInterval(timer);
-        } else {
-            element.textContent = formatNumber(Math.floor(current));
-        }
-    }, 16);
-}
-
-function formatNumber(num) {
-    if (num >= 1000000000000) {
-        return (num / 1000000000000).toFixed(0) + 'T';
-    } else if (num >= 1000000000) {
-        return (num / 1000000000).toFixed(0) + 'B';
-    } else if (num >= 1000000) {
-        return (num / 1000000).toFixed(0) + 'M';
-    } else if (num >= 1000) {
-        return (num / 1000).toFixed(0) + 'K';
-    }
-    return num.toString();
-}
-
-// Calculator functionality
-function initializeCalculators() {
-    // ROI Calculator
-    const investmentInput = document.getElementById('investmentAmount');
-    const targetPriceInput = document.getElementById('targetPrice');
-    
-    if (investmentInput && targetPriceInput) {
-        const updateROI = () => {
-            const investment = parseFloat(investmentInput.value) || 100;
-            const targetPrice = parseFloat(targetPriceInput.value) || 0.10;
-            const tokenPrice = 0.0001; // Initial token price
-            
-            const tokensReceived = (investment * 0.6) / tokenPrice; // 60% of investment goes to tokens
-            const potentialValue = tokensReceived * targetPrice;
-            const roi = ((potentialValue - investment) / investment * 100).toFixed(0);
-            
-            document.getElementById('tokensReceived').textContent = formatNumber(tokensReceived) + ' UNY';
-            document.getElementById('potentialValue').textContent = '$' + formatNumber(potentialValue);
-            document.getElementById('potentialROI').textContent = roi + 'x';
-        };
+    setTimeout(() => {
+        card.style.transform = 'translateY(0)';
+        card.style.opacity = '1';
         
-        investmentInput.addEventListener('input', updateROI);
-        targetPriceInput.addEventListener('input', updateROI);
-        updateROI(); // Initial calculation
-    }
+        // Animate value highlight
+        const valueElement = card.querySelector('.card-value');
+        if (valueElement) {
+            valueElement.style.animation = 'pulse 0.5s ease-in-out';
+        }
+    }, delay);
 }
 
-// Interactive elements
+function animateVisionCard(card) {
+    const delay = Array.from(card.parentNode.children).indexOf(card) * 200;
+    
+    setTimeout(() => {
+        card.style.transform = 'translateY(0) scale(1)';
+        card.style.opacity = '1';
+        
+        // Animate icon
+        const icon = card.querySelector('.card-icon');
+        if (icon) {
+            icon.style.animation = 'bounce 0.6s ease-in-out';
+        }
+    }, delay);
+}
+
+function animateStepCard(card) {
+    const delay = Array.from(card.parentNode.children).indexOf(card) * 150;
+    
+    setTimeout(() => {
+        card.style.transform = 'translateY(0)';
+        card.style.opacity = '1';
+        
+        // Animate step number
+        const number = card.querySelector('.step-number');
+        if (number) {
+            number.style.animation = 'zoomIn 0.5s ease-in-out';
+        }
+    }, delay);
+}
+
+// Interactive features
 function initializeInteractions() {
-    // Layer card interactions
-    const layerCards = document.querySelectorAll('.layer-card');
-    layerCards.forEach((card, index) => {
+    // Button interactions
+    const buttons = document.querySelectorAll('button, .btn-primary, .btn-secondary, .btn-outline');
+    
+    buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            // Create ripple effect
+            createRippleEffect(e, this);
+            
+            // Handle specific button actions
+            handleButtonAction(this);
+        });
+    });
+    
+    // Card hover effects
+    const cards = document.querySelectorAll(`
+        .vision-card, 
+        .infra-card, 
+        .stream-card, 
+        .case-card,
+        .security-card,
+        .community-card
+    `);
+    
+    cards.forEach(card => {
         card.addEventListener('mouseenter', () => {
             card.style.transform = 'translateY(-10px) scale(1.02)';
-            card.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)';
+            card.style.boxShadow = '0 20px 60px rgba(0, 0, 0, 0.15)';
         });
         
         card.addEventListener('mouseleave', () => {
             card.style.transform = 'translateY(0) scale(1)';
-            card.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
+            card.style.boxShadow = '0 10px 40px rgba(0, 0, 0, 0.1)';
         });
     });
     
-    // Pack card selection
-    const packCards = document.querySelectorAll('.pack-card');
-    packCards.forEach(card => {
-        card.addEventListener('click', () => {
-            packCards.forEach(c => c.classList.remove('selected'));
-            card.classList.add('selected');
-            
-            // Add selection styles
-            card.style.borderColor = 'var(--primary-color)';
-            card.style.boxShadow = '0 0 0 3px rgba(99, 102, 241, 0.1)';
+    // Phase status interactions
+    const phases = document.querySelectorAll('.phase');
+    phases.forEach(phase => {
+        phase.addEventListener('click', () => {
+            expandPhaseDetails(phase);
         });
     });
     
-    // Smooth hover effects for buttons
-    const buttons = document.querySelectorAll('.btn-primary, .btn-secondary, .pack-cta');
-    buttons.forEach(button => {
-        button.addEventListener('mouseenter', () => {
-            button.style.transform = 'translateY(-2px)';
-        });
-        
-        button.addEventListener('mouseleave', () => {
-            button.style.transform = 'translateY(0)';
+    // Community links with tracking
+    const communityLinks = document.querySelectorAll('.community-card');
+    communityLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const platform = link.querySelector('h3').textContent;
+            trackEvent('community_link_click', { platform });
         });
     });
 }
 
-// Scroll effects
-function initializeScrollEffects() {
-    // Parallax effect for hero background
-    const heroBackground = document.querySelector('.hero-background');
-    const floatingShapes = document.querySelectorAll('.shape');
+// Ripple effect for buttons
+function createRippleEffect(event, element) {
+    const circle = document.createElement('span');
+    const diameter = Math.max(element.clientWidth, element.clientHeight);
+    const radius = diameter / 2;
     
-    window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        const rate = scrolled * -0.5;
-        
-        if (heroBackground) {
-            heroBackground.style.transform = `translateY(${rate}px)`;
-        }
-        
-        // Floating shapes parallax
-        floatingShapes.forEach((shape, index) => {
-            const rate = scrolled * (-0.2 - index * 0.1);
-            shape.style.transform = `translateY(${rate}px)`;
-        });
-    });
+    const rect = element.getBoundingClientRect();
+    const left = event.clientX - rect.left - radius;
+    const top = event.clientY - rect.top - radius;
     
-    // Progress indicator (could be added to show scroll progress)
-    const progressBar = document.createElement('div');
-    progressBar.style.position = 'fixed';
-    progressBar.style.top = '0';
-    progressBar.style.left = '0';
-    progressBar.style.width = '0%';
-    progressBar.style.height = '3px';
-    progressBar.style.background = 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)';
-    progressBar.style.zIndex = '9999';
-    progressBar.style.transition = 'width 0.1s ease';
-    document.body.appendChild(progressBar);
+    circle.style.width = circle.style.height = `${diameter}px`;
+    circle.style.left = `${left}px`;
+    circle.style.top = `${top}px`;
+    circle.style.position = 'absolute';
+    circle.style.borderRadius = '50%';
+    circle.style.background = 'rgba(255, 255, 255, 0.3)';
+    circle.style.transform = 'scale(0)';
+    circle.style.animation = 'ripple 0.6s linear';
+    circle.style.pointerEvents = 'none';
     
-    window.addEventListener('scroll', () => {
-        const scrollTop = window.pageYOffset;
-        const docHeight = document.body.scrollHeight - window.innerHeight;
-        const scrollPercent = (scrollTop / docHeight) * 100;
-        progressBar.style.width = scrollPercent + '%';
-    });
+    element.style.position = 'relative';
+    element.style.overflow = 'hidden';
+    element.appendChild(circle);
+    
+    setTimeout(() => {
+        circle.remove();
+    }, 600);
 }
 
-// Wallet connection
-function initializeWalletConnection() {
-    const connectWalletBtn = document.getElementById('connectWallet');
+// Handle button actions
+function handleButtonAction(button) {
+    const buttonText = button.textContent.trim();
     
-    if (connectWalletBtn) {
-        connectWalletBtn.addEventListener('click', async () => {
-            try {
-                if (typeof window.ethereum !== 'undefined') {
-                    // Request account access
-                    const accounts = await window.ethereum.request({
-                        method: 'eth_requestAccounts'
-                    });
-                    
-                    if (accounts.length > 0) {
-                        const account = accounts[0];
-                        const shortAccount = account.slice(0, 6) + '...' + account.slice(-4);
-                        connectWalletBtn.textContent = shortAccount;
-                        connectWalletBtn.style.background = 'var(--success-color)';
-                        
-                        // Show success notification
-                        showNotification('Wallet connected successfully!', 'success');
-                        
-                        // Update UI to show wallet connected state
-                        updateWalletState(account);
-                    }
-                } else {
-                    showNotification('Please install MetaMask to connect your wallet', 'warning');
-                }
-            } catch (error) {
-                console.error('Error connecting wallet:', error);
-                showNotification('Failed to connect wallet. Please try again.', 'error');
-            }
-        });
+    switch (buttonText) {
+        case 'Get Started':
+        case 'Join The Revolution':
+            handleGetStarted();
+            break;
+        case 'Watch Demo':
+            handleWatchDemo();
+            break;
+        case 'Join Community':
+            handleJoinCommunity();
+            break;
+        case 'Read Docs':
+            handleReadDocs();
+            break;
+        default:
+            console.log(`Button clicked: ${buttonText}`);
     }
 }
 
-// Pack selection functionality
-function initializePackSelection() {
-    const packCards = document.querySelectorAll('.pack-card');
-    const packButtons = document.querySelectorAll('.pack-cta');
+// Action handlers
+function handleGetStarted() {
+    trackEvent('get_started_click');
     
-    packButtons.forEach((button, index) => {
-        button.addEventListener('click', () => {
-            const packTypes = ['starter', 'growth', 'pro'];
-            const packType = packTypes[index];
-            const prices = [25, 50, 100];
-            const price = prices[index];
+    // Create modal or redirect to onboarding
+    showModal('Get Started', `
+        <div class="onboarding-modal">
+            <h3>🏗️ Join the Digital Giant Revolution!</h3>
+            <p>Choose your path to start building your digital empire:</p>
             
-            // Show purchase modal or redirect to purchase flow
-            showPurchaseModal(packType, price);
-        });
-    });
+            <div class="onboarding-options">
+                <div class="option-card">
+                    <div class="option-icon">📱</div>
+                    <h4>Quick Start</h4>
+                    <p>Scan QR code or text "START" to join</p>
+                    <button class="btn-primary">Start Now</button>
+                </div>
+                
+                <div class="option-card">
+                    <div class="option-icon">👥</div>
+                    <h4>Community First</h4>
+                    <p>Join our Discord and meet other connection masters</p>
+                    <button class="btn-secondary">Join Discord</button>
+                </div>
+                
+                <div class="option-card">
+                    <div class="option-icon">📚</div>
+                    <h4>Learn More</h4>
+                    <p>Read our documentation and technical details</p>
+                    <button class="btn-outline">View Docs</button>
+                </div>
+            </div>
+        </div>
+    `);
 }
 
-// Commission calculator
-function initializeCommissionCalculator() {
-    const roleSelect = document.getElementById('calculatorRole');
-    const packSelect = document.getElementById('calculatorPack');
-    const referralsInput = document.getElementById('calculatorReferrals');
-    const teamSizeInput = document.getElementById('calculatorTeam');
+function handleWatchDemo() {
+    trackEvent('watch_demo_click');
     
-    if (roleSelect && packSelect && referralsInput && teamSizeInput) {
-        const updateCalculation = () => {
-            const role = roleSelect.value;
-            const packValue = parseInt(packSelect.value);
-            const referrals = parseInt(referralsInput.value) || 0;
-            const teamSize = parseInt(teamSizeInput.value) || 0;
-            
-            let directRate = 0.12; // Default advocate rate
-            let hasTeamOverride = false;
-            let hasFoundingBonus = false;
-            
-            switch (role) {
-                case 'advocate':
-                    directRate = 0.12;
-                    break;
-                case 'hustler':
-                    directRate = 0.50;
-                    hasTeamOverride = true;
-                    break;
-                case 'founding':
-                    directRate = 0.50;
-                    hasTeamOverride = true;
-                    hasFoundingBonus = true;
-                    break;
-            }
-            
-            const directCommission = packValue * directRate * referrals;
-            const teamOverride = hasTeamOverride ? (packValue * 0.02 * teamSize) : 0;
-            const foundingBonus = hasFoundingBonus ? (packValue * 0.05 * referrals) : 0;
-            const totalMonthly = directCommission + teamOverride + foundingBonus;
-            
-            // Update display
-            document.getElementById('directCommission').textContent = '$' + Math.round(directCommission);
-            document.getElementById('teamOverride').textContent = '$' + Math.round(teamOverride);
-            document.getElementById('foundingBonus').textContent = '$' + Math.round(foundingBonus);
-            document.getElementById('totalMonthly').textContent = '$' + Math.round(totalMonthly);
-            
-            // Annual projections
-            document.getElementById('conservativeAnnual').textContent = '$' + Math.round(totalMonthly * 6);
-            document.getElementById('realisticAnnual').textContent = '$' + Math.round(totalMonthly * 12);
-            document.getElementById('aggressiveAnnual').textContent = '$' + Math.round(totalMonthly * 24);
-        };
-        
-        roleSelect.addEventListener('change', updateCalculation);
-        packSelect.addEventListener('change', updateCalculation);
-        referralsInput.addEventListener('input', updateCalculation);
-        teamSizeInput.addEventListener('input', updateCalculation);
-        
-        updateCalculation(); // Initial calculation
-    }
+    showModal('Demo Video', `
+        <div class="demo-modal">
+            <h3>🎥 Digital Giant Platform Demo</h3>
+            <div class="video-placeholder">
+                <div class="video-icon">🎬</div>
+                <p>Interactive demo coming soon!</p>
+                <p>See how connection masters are building wealth through our platform:</p>
+                
+                <div class="demo-features">
+                    <div class="demo-feature">✅ QR Code onboarding in seconds</div>
+                    <div class="demo-feature">✅ POC beacon check-ins for rewards</div>
+                    <div class="demo-feature">✅ Commission tracking dashboard</div>
+                    <div class="demo-feature">✅ Real-time asset vault monitoring</div>
+                </div>
+                
+                <button class="btn-primary">Request Early Access</button>
+            </div>
+        </div>
+    `);
 }
 
-// Utility functions
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.style.cssText = `
-        position: fixed;
-        top: 100px;
-        right: 20px;
-        padding: 15px 20px;
-        border-radius: 8px;
-        color: white;
-        font-weight: 600;
-        z-index: 10000;
-        transform: translateX(400px);
-        transition: transform 0.3s ease;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    `;
+function handleJoinCommunity() {
+    trackEvent('join_community_click');
     
-    // Set background color based on type
-    const colors = {
-        success: '#10b981',
-        error: '#ef4444',
-        warning: '#f59e0b',
-        info: '#3b82f6'
-    };
-    notification.style.background = colors[type] || colors.info;
-    
-    notification.textContent = message;
-    document.body.appendChild(notification);
-    
-    // Animate in
-    setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
-    }, 100);
-    
-    // Remove after delay
-    setTimeout(() => {
-        notification.style.transform = 'translateX(400px)';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
-    }, 3000);
+    // Open Discord in new tab
+    window.open('https://discord.gg/digitalgiant', '_blank');
 }
 
-function showPurchaseModal(packType, price) {
-    // Create modal
+function handleReadDocs() {
+    trackEvent('read_docs_click');
+    
+    // Open docs in new tab (when available)
+    window.open('https://docs.digitalgiant.com', '_blank');
+}
+
+// Modal system
+function showModal(title, content) {
     const modal = document.createElement('div');
-    modal.className = 'purchase-modal';
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.8);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    `;
-    
-    const modalContent = document.createElement('div');
-    modalContent.className = 'modal-content';
-    modalContent.style.cssText = `
-        background: white;
-        border-radius: 16px;
-        padding: 40px;
-        max-width: 500px;
-        width: 90%;
-        text-align: center;
-        transform: scale(0.9);
-        transition: transform 0.3s ease;
-    `;
-    
-    modalContent.innerHTML = `
-        <div style="font-size: 3rem; margin-bottom: 20px;">
-            ${packType === 'starter' ? '🌱' : packType === 'growth' ? '🚀' : '💎'}
-        </div>
-        <h3 style="font-size: 2rem; margin-bottom: 10px; color: #1e293b;">
-            ${packType.charAt(0).toUpperCase() + packType.slice(1)} Pack
-        </h3>
-        <p style="font-size: 3rem; font-weight: 800; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px;">
-            $${price}
-        </p>
-        <p style="color: #64748b; margin-bottom: 30px; line-height: 1.6;">
-            Ready to join the Unykorn ecosystem? This pack includes tokens, asset vault allocation, and commission earning potential.
-        </p>
-        <div style="display: flex; gap: 15px; justify-content: center;">
-            <button id="confirmPurchase" style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; border: none; padding: 15px 30px; border-radius: 12px; font-weight: 600; cursor: pointer;">
-                Purchase Now
-            </button>
-            <button id="cancelPurchase" style="background: #f1f5f9; color: #64748b; border: none; padding: 15px 30px; border-radius: 12px; font-weight: 600; cursor: pointer;">
-                Cancel
-            </button>
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>${title}</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                ${content}
+            </div>
         </div>
     `;
     
-    modal.appendChild(modalContent);
     document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
     
-    // Animate in
-    setTimeout(() => {
-        modal.style.opacity = '1';
-        modalContent.style.transform = 'scale(1)';
-    }, 100);
+    // Close modal functionality
+    const closeBtn = modal.querySelector('.modal-close');
+    closeBtn.addEventListener('click', () => closeModal(modal));
     
-    // Event listeners
-    document.getElementById('confirmPurchase').addEventListener('click', () => {
-        // Here you would integrate with the smart contract
-        showNotification(`${packType} pack purchase initiated!`, 'info');
-        closeModal();
-    });
-    
-    document.getElementById('cancelPurchase').addEventListener('click', closeModal);
     modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
-    
-    function closeModal() {
-        modal.style.opacity = '0';
-        modalContent.style.transform = 'scale(0.9)';
-        setTimeout(() => {
-            document.body.removeChild(modal);
-        }, 300);
-    }
-}
-
-function updateWalletState(account) {
-    // Update any wallet-dependent UI elements
-    const walletElements = document.querySelectorAll('.wallet-dependent');
-    walletElements.forEach(el => {
-        el.style.display = 'block';
-    });
-    
-    // Store wallet state
-    localStorage.setItem('connectedWallet', account);
-    
-    // Check if user has any tokens or positions
-    // This would integrate with the smart contracts to fetch user data
-    updateUserStats(account);
-}
-
-async function updateUserStats(account) {
-    // This would fetch real data from the smart contracts
-    const mockStats = {
-        tokens: '125,000 UNY',
-        vaultShares: '$450',
-        commissions: '$1,250',
-        pocStreak: '7 days'
-    };
-    
-    // Update any stats displays on the page
-    const statsElements = {
-        'user-tokens': mockStats.tokens,
-        'user-vault': mockStats.vaultShares,
-        'user-commissions': mockStats.commissions,
-        'user-streak': mockStats.pocStreak
-    };
-    
-    Object.entries(statsElements).forEach(([id, value]) => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.textContent = value;
+        if (e.target === modal) {
+            closeModal(modal);
         }
     });
+    
+    // Animate modal in
+    setTimeout(() => {
+        modal.classList.add('modal-active');
+    }, 10);
 }
 
-// Auto-update dynamic content
-setInterval(() => {
-    // Update circulating supply (mock data - would come from smart contract)
-    const circulatingElement = document.getElementById('circulatingSupply');
-    if (circulatingElement) {
-        const currentSupply = 999850000000; // Mock decreasing supply
-        circulatingElement.textContent = formatNumber(currentSupply) + ' UNY';
-    }
+function closeModal(modal) {
+    modal.classList.remove('modal-active');
+    document.body.style.overflow = 'auto';
     
-    // Update total burned (mock data)
-    const burnedElement = document.getElementById('totalBurned');
-    if (burnedElement) {
-        const totalBurned = 150000000; // Mock burned amount
-        burnedElement.textContent = formatNumber(totalBurned) + ' UNY';
-    }
-}, 5000);
+    setTimeout(() => {
+        modal.remove();
+    }, 300);
+}
 
-// Initialize demo mode if no wallet is connected
-document.addEventListener('DOMContentLoaded', () => {
-    // Check if wallet was previously connected
-    const connectedWallet = localStorage.getItem('connectedWallet');
-    if (connectedWallet) {
-        const connectBtn = document.getElementById('connectWallet');
-        if (connectBtn) {
-            const shortAccount = connectedWallet.slice(0, 6) + '...' + connectedWallet.slice(-4);
-            connectBtn.textContent = shortAccount;
-            connectBtn.style.background = 'var(--success-color)';
-            updateWalletState(connectedWallet);
+// Phase expansion
+function expandPhaseDetails(phase) {
+    const isExpanded = phase.classList.contains('expanded');
+    
+    // Close other expanded phases
+    document.querySelectorAll('.phase.expanded').forEach(p => {
+        if (p !== phase) {
+            p.classList.remove('expanded');
         }
+    });
+    
+    if (!isExpanded) {
+        phase.classList.add('expanded');
+        
+        // Add detailed information
+        if (!phase.querySelector('.phase-details')) {
+            const details = document.createElement('div');
+            details.className = 'phase-details';
+            details.innerHTML = generatePhaseDetails(phase);
+            phase.appendChild(details);
+        }
+    } else {
+        phase.classList.remove('expanded');
     }
-});
+}
 
-// Keyboard shortcuts
-document.addEventListener('keydown', (e) => {
-    // Alt + H to scroll to hero
-    if (e.altKey && e.key === 'h') {
-        document.getElementById('hero').scrollIntoView({ behavior: 'smooth' });
-    }
+function generatePhaseDetails(phase) {
+    const phaseNumber = phase.querySelector('.phase-number').textContent;
     
-    // Alt + E to scroll to ecosystem
-    if (e.altKey && e.key === 'e') {
-        document.getElementById('ecosystem').scrollIntoView({ behavior: 'smooth' });
-    }
+    const details = {
+        '1': {
+            budget: '$250K',
+            timeline: '90 days',
+            team: '15 people',
+            focus: 'Foundation & Security'
+        },
+        '2': {
+            budget: '$500K',
+            timeline: '180 days',
+            team: '25 people',
+            focus: 'Growth & Partnerships'
+        },
+        '3': {
+            budget: '$1M',
+            timeline: '270 days',
+            team: '50 people',
+            focus: 'Scale & International'
+        }
+    };
     
-    // Alt + T to scroll to tokenomics
-    if (e.altKey && e.key === 't') {
-        document.getElementById('tokenomics').scrollIntoView({ behavior: 'smooth' });
-    }
+    const detail = details[phaseNumber] || details['1'];
     
-    // Escape to close any modals
-    if (e.key === 'Escape') {
-        const modals = document.querySelectorAll('.purchase-modal');
-        modals.forEach(modal => {
-            if (modal.style.opacity !== '0') {
-                modal.click(); // Trigger close
+    return `
+        <div class="phase-detail-grid">
+            <div class="detail-item">
+                <div class="detail-label">Budget</div>
+                <div class="detail-value">${detail.budget}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Timeline</div>
+                <div class="detail-value">${detail.timeline}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Team Size</div>
+                <div class="detail-value">${detail.team}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Focus Area</div>
+                <div class="detail-value">${detail.focus}</div>
+            </div>
+        </div>
+    `;
+}
+
+// Analytics and tracking
+function trackEvent(eventName, properties = {}) {
+    // Basic event tracking (replace with your analytics service)
+    console.log(`📊 Event: ${eventName}`, properties);
+    
+    // Example: Send to analytics service
+    // analytics.track(eventName, properties);
+}
+
+// Initialize counters when they come into view
+function initializeCounters() {
+    const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const counter = entry.target;
+                const target = parseInt(counter.getAttribute('data-target'));
+                animateCounter(counter, target);
+                counterObserver.unobserve(counter);
             }
         });
+    }, { threshold: 0.5 });
+    
+    document.querySelectorAll('.stat-number[data-target]').forEach(counter => {
+        counterObserver.observe(counter);
+    });
+}
+
+// Add custom CSS for modal system
+const modalStyles = `
+<style>
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.modal-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    transform: scale(0.9) translateY(20px);
+    transition: all 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-overlay.modal-active .modal-content {
+    transform: scale(1) translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 2rem 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: var(--primary);
+    font-weight: var(--font-weight-bold);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+    background: var(--surface);
+    color: var(--primary);
+}
+
+.modal-body {
+    padding: 1rem 2rem 2rem;
+}
+
+.onboarding-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.option-card {
+    text-align: center;
+    padding: 1.5rem;
+    background: var(--surface);
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+}
+
+.option-card:hover {
+    transform: translateY(-5px);
+}
+
+.option-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.option-card h4 {
+    margin-bottom: 0.5rem;
+    color: var(--primary);
+}
+
+.option-card p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.demo-features {
+    margin: 1rem 0;
+    text-align: left;
+}
+
+.demo-feature {
+    padding: 0.5rem 0;
+    color: var(--success);
+    font-weight: var(--font-weight-medium);
+}
+
+.video-placeholder {
+    text-align: center;
+    padding: 2rem;
+    background: var(--surface);
+    border-radius: 12px;
+}
+
+.video-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.phase.expanded {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-left: 4px solid var(--primary);
+}
+
+.phase-details {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
     }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.phase-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.detail-item {
+    text-align: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.detail-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+}
+
+.detail-value {
+    font-size: 1.1rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--primary);
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 53%, 80%, 100% {
+        transform: translate3d(0, 0, 0);
+    }
+    40%, 43% {
+        transform: translate3d(0, -10px, 0);
+    }
+    70% {
+        transform: translate3d(0, -5px, 0);
+    }
+    90% {
+        transform: translate3d(0, -2px, 0);
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale3d(0.3, 0.3, 0.3);
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .modal-content {
+        margin: 1rem;
+        max-height: 90vh;
+    }
+    
+    .onboarding-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .phase-detail-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+</style>
+`;
+
+// Inject modal styles into document
+document.head.insertAdjacentHTML('beforeend', modalStyles);
+
+// Performance monitoring
+const performanceObserver = new PerformanceObserver((list) => {
+    list.getEntries().forEach((entry) => {
+        if (entry.entryType === 'navigation') {
+            console.log(`📈 Page Load Time: ${entry.loadEventEnd - entry.loadEventStart}ms`);
+        }
+    });
 });
+
+if ('PerformanceObserver' in window) {
+    performanceObserver.observe({ entryTypes: ['navigation'] });
+}
+
+// Service worker registration for offline functionality
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+                console.log('🔧 SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+                console.log('🔧 SW registration failed: ', registrationError);
+            });
+    });
+}
