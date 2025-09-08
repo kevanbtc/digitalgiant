@@ -69,6 +69,29 @@ Your network isn't obsolete - it's your SUPERPOWER.
 
 ## 🚀 GETTING STARTED
 
+### 🌐 Web Application
+
+**Visit our live platform**: [digitalgiant.com](https://digitalgiant.com)
+
+#### 📱 Platform Features
+- **🏠 [Homepage](/)** - Discover the connection economy revolution
+- **ℹ️ [About](/about)** - Learn our mission and values
+- **⭐ [Features](/features)** - Explore platform capabilities
+- **💲 [Pricing](/pricing)** - Choose your empire builder pack
+- **📞 [Contact](/contact)** - Get support and schedule demos
+- **🚀 [Get Started](/auth/register)** - Join the revolution today
+
+#### 🛠️ Web Development
+
+```bash
+# Set up the web application
+cd web
+npm install
+cp .env.example .env.local
+npm run dev
+# Visit http://localhost:3000
+```
+
 ### Quick Setup
 
 ```bash
